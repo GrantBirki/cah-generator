@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
+[ -z "$RBENV_VERSION" ] && export RBENV_VERSION=$(cat "$DIR/.ruby-version")
+[ -d "/usr/share/rbenv/shims" ] && export PATH=/usr/share/rbenv/shims:$PATH
+
+TRASHDIR=$(mktemp -d /tmp/bootstrap.XXXXXXXXXXXXXXXXX)
+cleanup() {
+  rm -rf "$TRASHDIR"
+  # Remove empty directory
+  rmdir "$DIR/vendor/cache" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+cd "$DIR"
+
+# Bootstrap gem dependencies.
+echo "==> Installing gem dependencies..."
+bundle config set --local path 'vendor/gems'
+bundle install --local $extra_bootstrap_flags
+bundle binstubs --all

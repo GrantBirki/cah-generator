@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  single-card:
+    container_name: generator
+    build: ./generators/single-card-output
+    volumes:
+      - ./output/single-card:/app/output
+      - ./cards:/app/cards
+
+  multi-card:
+    container_name: generator
+    build: ./generators/multi-card-output
+    volumes:
+      - ./output/multi-card:/app/output
+      - ./cards:/app/cards
