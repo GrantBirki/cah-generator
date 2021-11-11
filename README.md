@@ -19,6 +19,8 @@ The first step you need to do before generating your cards is editing or creatin
 
 > Note: Whether you use the `single-card-output` or `multi-card-output` option, the card data will both be pulled from the `cards/` folder. Each method has different formatting options so keep that in mind. If you want to do something crazy with your cards you will likely lock yourself into the `multi-card-output` option. If you want a very basic deck that is easily printable, you will need to keep your cards very simple and go with the `single-card-output` option.
 
+> Note: for apostrophes, use `’`
+
 ### Custom Card attributes
 
 Here are a few quick custom card attributes that you can add to your cards:
