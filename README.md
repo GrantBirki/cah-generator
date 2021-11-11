@@ -24,9 +24,14 @@ The first step you need to do before generating your cards is editing or creatin
 An example of the `cards/info.txt` looks like the content below:
 
 ```text
-Beans Against Humanity
-BAH
-1
+name = Beans Against Humanity
+short_name = BAH
+version = 1
+custom_img_1 = bean.png
+custom_img_2 = bean.png
+custom_img_3 = bean.png
+custom_img_4 = bean.png
+custom_img_5 = bean.png
 ```
 
 In this case, the custom deck will have the following:
@@ -34,6 +39,8 @@ In this case, the custom deck will have the following:
 - `Beans Against Humanity` as the name instead of `Cards Against Humanity`
 - `BAH` as the identifier instead of `CAH` (not used in the `single-card-output` generator)
 - `1` as the game deck version
+
+> All the the `custom_img_*` values are specific to the `single-card-output` generator. These files are stored in the `generator/single-card-output/custom_img/` folder. They **must** be simple black and white images
 
 Note: If you are using the `make single-card-output` and do **not** want to use the info file, set all the values to `none` in the text file like so:
 
