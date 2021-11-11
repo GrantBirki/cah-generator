@@ -34,6 +34,11 @@ def move_to_output(color, suffix_number):
 
 def create_zip_package():
     zip_name = "game-package"
+    
+    # Remove the current zip file if it exists
+    if os.path.exists(f"output/{zip_name}.zip"):
+        os.remove(f"output/{zip_name}.zip")
+
     shutil.make_archive(zip_name, 'zip', "output")
     source = f"{zip_name}.zip"
     dest = f"/app/output/{zip_name}.zip"
