@@ -133,6 +133,23 @@ def check_for_custom_img_tag(card):
     else:
         return False
 
+def add_black_card_info_image(card):
+    if "[[2]]" in card:
+        img = Image.open("files/cards/cards_0.png")
+        add_image = Image.open("img/p2.png")
+        img.paste(add_image, (2150,3740))
+        img.save("files/cards/cards_0.png")
+    elif "[[3]]" in card:
+        img = Image.open("files/cards/cards_0.png")
+        add_image = Image.open("img/d2p3.png")
+        img.paste(add_image, (2150,3625))
+        img.save("files/cards/cards_0.png")
+    elif "[[gears]]" in card:
+        img = Image.open("files/cards/cards_0.png")
+        add_image = Image.open("img/gears.png")
+        img.paste(add_image, (2350,3500))
+        img.save("files/cards/cards_0.png")
+
 def add_custom_img(image, invert=False):
     # Open the card image
     img = Image.open("files/cards/cards_0.png")
@@ -151,6 +168,8 @@ def format_card_text(card):
 
     # Replace all the custom image tags with nothing
     fmt_card = re.sub(r"\{\{(\d)\}\}", r"", fmt_card)
+    # Replace all the built-in image tags with nothing
+    fmt_card = re.sub(r"\[\[.*\]\]", r"", fmt_card)
 
     return fmt_card
 
@@ -177,6 +196,7 @@ def generate_card(card, color, game_info, counter):
     if color == "black":
         if image_tag:
             add_custom_img("custom_img/" + game_info["custom_img_" + str(image_tag)], invert=True)
+        add_black_card_info_image(card)
     else:
         if image_tag:
             add_custom_img("custom_img/" + game_info["custom_img_" + str(image_tag)])
