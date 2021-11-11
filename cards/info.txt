@@ -1,3 +1,8 @@
-Beans Against Humanity
-BAH
-1
+name = Beans Against Humanity
+short_name = BAH
+version = 1
+custom_img_1 = bean.png
+custom_img_2 = bean.png
+custom_img_3 = bean.png
+custom_img_4 = bean.png
+custom_img_5 = bean.png

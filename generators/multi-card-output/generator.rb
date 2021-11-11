@@ -144,6 +144,13 @@ def render_card_page(pdf, card_geometry, icon, statements, is_black, game_info)
       card_text = card_text.gsub(/\\n */, "\n")
       card_text = card_text.gsub(/\\t/,   "\t")
 
+      # Remove non-supported custom images for the multi-generator
+      card_text = card_text.gsub('{{1}}', '')
+      card_text = card_text.gsub('{{2}}', '')
+      card_text = card_text.gsub('{{3}}', '')
+      card_text = card_text.gsub('{{4}}', '')
+      card_text = card_text.gsub('{{5}}', '')
+
       card_text = card_text.gsub('<b>', '[[[b]]]')
       card_text = card_text.gsub('<i>', '[[[i]]]')
       card_text = card_text.gsub('<u>', '[[[u]]]')
@@ -390,18 +397,17 @@ def load_info(file)
   lines = IO.readlines(file) if File.exist?(file)
 
   unless lines.nil?
-    name = if lines.size.positive?
-             lines[0]
-           else
-             ''
-           end
-
-    if lines.size > 1
-      name_abbr = name.scan(/\b[a-z]/i).join
-      version = lines[1]
-    elsif lines.size > 2
+    if lines.size.positive?
+      name = lines[0]
+      name = name.split('=')[1]
+      name = name.strip
       name_abbr = lines[1]
+      name_abbr = name_abbr.split('=')[1]
+      name_abbr = name_abbr.strip
+
       version = lines[2]
+      version = version.split('=')[1]
+      version = version.strip
     else
       name_abbr = ''
       version = ''

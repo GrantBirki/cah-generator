@@ -19,14 +19,29 @@ The first step you need to do before generating your cards is editing or creatin
 
 > Note: Whether you use the `single-card-output` or `multi-card-output` option, the card data will both be pulled from the `cards/` folder. Each method has different formatting options so keep that in mind. If you want to do something crazy with your cards you will likely lock yourself into the `multi-card-output` option. If you want a very basic deck that is easily printable, you will need to keep your cards very simple and go with the `single-card-output` option.
 
+### Custom Card attributes
+
+Here are a few quick custom card attributes that you can add to your cards:
+
+- `{{1}}` - Ads the `custom_img_1` to a card
+- `{{2}}` - Ads the `custom_img_2` to a card ... etc
+- `[[gears]]` - Ads the `gears` image to a card
+- `[[2]]` - Ads the `draw 2` image to a card
+- `[[3]]` - Ads the `draw 2 pick 3` image to a card
+
 ### About `info.txt`
 
 An example of the `cards/info.txt` looks like the content below:
 
 ```text
-Beans Against Humanity
-BAH
-1
+name = Beans Against Humanity
+short_name = BAH
+version = 1
+custom_img_1 = bean.png
+custom_img_2 = bean.png
+custom_img_3 = bean.png
+custom_img_4 = bean.png
+custom_img_5 = bean.png
 ```
 
 In this case, the custom deck will have the following:
@@ -34,6 +49,8 @@ In this case, the custom deck will have the following:
 - `Beans Against Humanity` as the name instead of `Cards Against Humanity`
 - `BAH` as the identifier instead of `CAH` (not used in the `single-card-output` generator)
 - `1` as the game deck version
+
+> All the the `custom_img_*` values are specific to the `single-card-output` generator. These files are stored in the `generator/single-card-output/custom_img/` folder. They **must** be simple black and white images
 
 Note: If you are using the `make single-card-output` and do **not** want to use the info file, set all the values to `none` in the text file like so:
 
