@@ -8,16 +8,28 @@
   A custom Cards Against Humanity generator specifically designed around having your cards professionally printed
 </p>
 
+## Turbo Quick Start ⭐
+
+Generating your own custom CAH deck:
+
+1. Make sure all the cards you want to generate are up-to-date in the `cards/deck_<#>` folder
+2. Run `script/deck --deck=#` (the number of the deck you want to generate)
+3. Your deck zip will be placed in the `decks/` folder
+
+### Creating a new deck
+
+Need to create a new deck? No problem! Just run `script/deck --create=#` (the number of the deck you want to create)
+
+From here you can now edit the `.txt` files in the `cards/deck_<#>` folder to add your own cards.
+
 ## Editing Cards 📝
 
-The first step you need to do before generating your cards is editing or creating them!
+Here is some brief info on creating your own cards:
 
-- Edit one line at a time seperated by a new line in the `cards/` directory
+- Edit one line at a time seperated by a new line in the `cards/deck_#/` directory
 - `black.txt` controls the black cards to generate
 - `white.txt` controls the white cards to generate
 - `info.txt` controls meta data about the deck (e.g. the name of the deck, version, etc)
-
-> Note: Whether you use the `single-card-output` or `multi-card-output` option, the card data will both be pulled from the `cards/` folder. Each method has different formatting options so keep that in mind. If you want to do something crazy with your cards you will likely lock yourself into the `multi-card-output` option. If you want a very basic deck that is easily printable, you will need to keep your cards very simple and go with the `single-card-output` option.
 
 ### Custom Card attributes
 
@@ -28,6 +40,8 @@ Here are a few quick custom card attributes that you can add to your cards:
 - `[[gears]]` - Ads the `gears` image to a card
 - `[[2]]` - Ads the `draw 2` image to a card
 - `[[3]]` - Ads the `draw 2 pick 3` image to a card
+
+> Note: to add a custom card image, drop the image file into the `generators/single-card-output/custom_img/` folder
 
 ### About `info.txt`
 
@@ -47,12 +61,10 @@ custom_img_5 = bean.png
 In this case, the custom deck will have the following:
 
 - `Beans Against Humanity` as the name instead of `Cards Against Humanity`
-- `BAH` as the identifier instead of `CAH` (not used in the `single-card-output` generator)
+- `BAH` as the identifier instead of `CAH`
 - `1` as the game deck version
 
-> All the the `custom_img_*` values are specific to the `single-card-output` generator. These files are stored in the `generator/single-card-output/custom_img/` folder. They **must** be simple black and white images
-
-Note: If you are using the `make single-card-output` and do **not** want to use the info file, set all the values to `none` in the text file like so:
+Note: If you do **not** want to use the info file, set all the values to `none` in the text file like so:
 
   ```text
   none
@@ -64,97 +76,17 @@ Note: If you are using the `make single-card-output` and do **not** want to use 
 
 ## Generating Cards ⚙️
 
-There are two methods in this repo that are used to generate cards. Both options can be found the in `generators/` folder
-
-- **Option #1**: Generate all cards as individual image files (aka `generators/single-card-output/` code)
+- Generate all cards as individual image files (aka `generators/single-card-output/` code)
 
   This is the ideal option for printing cards since many websites need you to individually upload each card that you want to print
 
-  ```bash
-  make single-card-output
+  ```text
+  script/deck --create=#
   ```
 
-- **Option #2**: Generate all the cards into a single PDF file (aka `generators/multi-card-output/` code)
+## Note about the code
 
-  This is the *quick and dirty* option. It actually provides the most flexibility with editing cards as the Ruby code for doing so is quite robust. It provides fancy symbols, custom card icons, special fonts, and much more. However, it is going to be a pain to get the mashed together PDF professionally printed. You can always take this PDF to a printing store, print it out, and cut the cards on your own.
-
-  ```bash
-  make multi-card-output
-  ```
-
-Both options will output your cards into the `output/` folder in their respective directories.
-
-## Single-Card Output Info
-
-To generate a single image for each card (think 1:1 ration of cards to files) then use the `single-card-output` option. This is **the easiest option** if you wish to print your cards professionally via a printing company!
-
-```console
-$ make multi-card-output
-Creating generator ... done
-Creating generator ... done
-Attaching to generator
-generator      | [i] Attempting to generate the following:
-generator      |  # Cards
-generator      |    # White cards: 3
-generator      |    # Black cards: 4
-generator      |    # Total cards: 7
-generator      |  # Zip Game Bundles: 1
-generator      |  # Total Files: 8
-generator      |
-generator      | [i] Custom Game Name Enabled: Beans Against Humanity
-generator      | [i] Custom Game Version Enabled: 1
-generator      |
-generator      |  # Generating Cards...
-generator      |    + Created: white/card_0.png
-generator      |    + Created: white/card_1.png
-generator      |    + Created: white/card_2.png
-generator      |    + Created: black/card_0.png
-generator      |    + Created: black/card_1.png
-generator      |    + Created: black/card_2.png
-generator      |    + Created: black/card_3.png
-generator      |
-generator      | + Bundled all cards into: output/single-card/game-package.zip
-generator      |
-generator      | [i] Total files created: 8
-generator      | [i] Done!
-generator exited with code 0
-```
-
-## Multi-Card Output Info
-
-This section contains details on how to use the code in the `generators/multi-card-output/` folder
-
-### Usage (docker) 🐳
-
-To use the generator, simply run the following command: `make run`
-
-```console
-$ make multi-card-output
-Creating ruby ... done
-Attaching to generator
-generator    | Generated: output/cards.pdf
-generator    | Done!
-```
-
-Once this command completes, your `cards.pdf` file can be found in the `output/` directory.
-
-### Usage (ruby) 💎
-
-To use the generator in Ruby run the following commands:
-
-**Bootstrap the repo:**
-
-```bash
-script/bootstrap
-```
-
-**Generate the cards:**
-
-```bash
-script/generate -d cards/ -l -o output
-```
-
-Once this command completes, your `cards.pdf` file can be found in the `output/` directory.
+This code is unbelievably hacky, gross, and terrible.. but it works.
 
 <details>
   <summary>Original Documentation</summary>

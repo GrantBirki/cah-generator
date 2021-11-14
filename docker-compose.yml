@@ -5,7 +5,7 @@ services:
     container_name: generator
     build: ./generators/single-card-output
     volumes:
-      - ./output/single-card:/app/output
+      - ./decks:/app/decks
       - ./cards:/app/cards
 
   multi-card:

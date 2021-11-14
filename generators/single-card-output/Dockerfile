@@ -17,5 +17,7 @@ COPY . .
 RUN mv /app/policy.xml /etc/ImageMagick-6/policy.xml
 
 RUN mkdir -p /app/files/cards
+RUN mkdir -p /app/output/black
+RUN mkdir -p /app/output/white
 
 CMD ["python3", "script/generator.py"]

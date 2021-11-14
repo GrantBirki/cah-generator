@@ -2,10 +2,12 @@ import os
 import re
 import shutil
 import subprocess
+from sys import stdout
 
+import PIL.ImageOps
 from PIL import Image, ImageDraw, ImageFont
-import PIL.ImageOps 
 
+DECK = os.environ['DECK']
 
 def get_cards(path):
     with open(path, 'r') as file_contents:
@@ -19,7 +21,7 @@ def get_cards(path):
 
 def create_card(card, color):
 
-    command = ["php", "generator.php", f"batch-id=cards&card-text={card}&card-color={color}&icon=none"]
+    command = ["php", "generator.php", f"batch-id=cards&card-text={card}&card-color={color}&icon=none&mechanic=none"]
     process = subprocess.Popen(command, stdout=subprocess.PIPE)
     output, error = process.communicate()
 
@@ -33,9 +35,21 @@ def move_to_output(color, suffix_number):
     output, error = process.communicate()
 
     print(f'   + Created: {color}/card_{suffix_number}.png')
+    stdout.flush()
 
 def create_zip_package():
-    zip_name = "game-package"
+
+    # Create the src folder for the .txt files which are the source of the cards
+    command = f"mkdir /app/output/src"
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+
+    # Copy the .txt files to the src folder
+    command = f"cp -r /app/cards/deck_{DECK}/. /app/output/src/"
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+
+    zip_name = f"deck_{DECK}"
     
     # Remove the current zip file if it exists
     if os.path.exists(f"output/{zip_name}.zip"):
@@ -43,12 +57,13 @@ def create_zip_package():
 
     shutil.make_archive(zip_name, 'zip', "output")
     source = f"{zip_name}.zip"
-    dest = f"/app/output/{zip_name}.zip"
+    dest = f"/app/decks/{zip_name}.zip"
     command = f"mv {source} {dest}"
     process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
 
-    print(f'\n+ Bundled all cards into: output/single-card/game-package.zip')
+    print(f'\n+ Bundled all cards into: decks/deck_{DECK}.zip')
+    stdout.flush()
 
 def add_custom_game_name(game_name, invert=False):
     # Open an Image
@@ -73,7 +88,7 @@ def add_custom_game_name(game_name, invert=False):
     img.save("files/cards/cards_0.png")
 
 def check_game_info_file():
-    with open('cards/info.txt') as info_file:
+    with open(f'cards/deck_{DECK}/info.txt') as info_file:
         info = info_file.readlines()
     data = []
     for line in info:
@@ -158,7 +173,7 @@ def add_custom_img(image, invert=False):
     add_image = Image.open(image)
     if invert:
         add_image = PIL.ImageOps.invert(add_image)
-    img.paste(add_image, (2350,3700))
+    img.paste(add_image, (2200,3650))
 
     # Save the edited image
     img.save("files/cards/cards_0.png")
@@ -174,39 +189,43 @@ def format_card_text(card):
     return fmt_card
 
 def generate_card(card, color, game_info, counter):
-    # Format the card text
-    fmt_card = format_card_text(card)
+    try:
+        # Format the card text
+        fmt_card = format_card_text(card)
 
-    # Create the card
-    create_card(fmt_card, color)
+        # Create the card
+        create_card(fmt_card, color)
 
-    # Add the custom game name if there is one
-    if game_info["game_name"]:
+        # Add the custom game name if there is one
+        if game_info["game_name"]:
+            if color == "black":
+                add_custom_game_name(game_info["game_name"], invert=True)
+            else:
+                add_custom_game_name(game_info["game_name"])
+
+        # Add a custom game version if there is one
+        if game_info["game_version"]:
+            add_custom_deck_version(game_info["game_version"])
+
+        # Add a custom image if there is one
+        image_tag = check_for_custom_img_tag(card)
         if color == "black":
-            add_custom_game_name(game_info["game_name"], invert=True)
+            if image_tag:
+                add_custom_img("custom_img/" + game_info["custom_img_" + str(image_tag)], invert=True)
+            add_black_card_info_image(card)
         else:
-            add_custom_game_name(game_info["game_name"])
+            if image_tag:
+                add_custom_img("custom_img/" + game_info["custom_img_" + str(image_tag)])
 
-    # Add a custom game version if there is one
-    if game_info["game_version"]:
-        add_custom_deck_version(game_info["game_version"])
-
-    # Add a custom image if there is one
-    image_tag = check_for_custom_img_tag(card)
-    if color == "black":
-        if image_tag:
-            add_custom_img("custom_img/" + game_info["custom_img_" + str(image_tag)], invert=True)
-        add_black_card_info_image(card)
-    else:
-        if image_tag:
-            add_custom_img("custom_img/" + game_info["custom_img_" + str(image_tag)])
-
-    # Move the file to the output folder because we're done with it
-    move_to_output(color, counter)
+        # Move the file to the output folder because we're done with it
+        move_to_output(color, counter)
+    except:
+        print("[!] Error generating card: " + card + " - " + color)
+        stdout.flush()
 
 def main():
-    white_cards = get_cards("cards/white.txt")
-    black_cards = get_cards("cards/black.txt")
+    white_cards = get_cards(f"cards/deck_{DECK}/white.txt")
+    black_cards = get_cards(f"cards/deck_{DECK}/black.txt")
 
     game_info = check_game_info_file()
 
@@ -224,6 +243,7 @@ def main():
     if game_info["game_version"]:
         print(f"[i] Custom Game Version Enabled: {game_info['game_version']}")
     print(f"\n # Generating Cards...")
+    stdout.flush()
 
     counter = 0
     for card in white_cards:
@@ -239,9 +259,11 @@ def main():
 
     file_count = sum(len(files) for _, _, files in os.walk('/app/output'))
 
-    print(f'\n[i] Total files created: {file_count}')
+    print(f'\n[i] Total files bundled: {file_count}')
+    stdout.flush()
 
     print('[i] Done!')
+    stdout.flush()
 
 if __name__ == '__main__':
     main()

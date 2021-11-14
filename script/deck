@@ -1,0 +1,60 @@
+#!/bin/bash
+
+function usage()
+{
+    echo -e "\t ====================================== script/deck usage ======================================"
+    echo -e "\t-h --help               : displays help message"
+    echo -e "\t-c --create             : creates new directory structure and empty files for a new deck"
+    echo -e "\t-d --deck               : generates the cards for a given deck number"
+    echo -e "\n\t Example (create)     : script/deck --create=5 (will create cards/deck_5)"
+    echo -e "\n\t Example (deck)       : script/deck --deck=1 (will generate cards/deck_1)"
+    echo -e "\t ==============================================================================================="
+}
+
+while [ "$1" != "" ]; do
+    PARAM=`echo $1 | awk -F= '{print $1}'`
+    VALUE=`echo $1 | awk -F= '{print $2}'`
+    case $PARAM in
+      -h | --help)
+        usage
+        exit
+        ;;
+      -c | --create)
+        create=$VALUE
+        ;;
+      -d | --deck)
+        deck=$VALUE
+        ;;
+      *)
+      echo "ERROR: unknown parameter \"$PARAM\""
+      usage
+      exit 1
+      ;;
+    esac
+    shift
+done
+
+if [ $create ]; then
+    echo "Creating new deck..."
+    mkdir -p cards/deck_$create
+    touch cards/deck_$create/black.txt
+    touch cards/deck_$create/white.txt
+    echo "name = Beans Against Humanity" > cards/deck_$create/info.txt
+    echo "short_name = BAH" >> cards/deck_$create/info.txt
+    echo "version = $create" >> cards/deck_$create/info.txt
+    echo "custom_img_1 = bean.png" >> cards/deck_$create/info.txt
+    echo "custom_img_2 = bean.png" >> cards/deck_$create/info.txt
+    echo "custom_img_3 = bean.png" >> cards/deck_$create/info.txt
+    echo "custom_img_4 = bean.png" >> cards/deck_$create/info.txt
+    echo "custom_img_5 = bean.png" >> cards/deck_$create/info.txt
+    echo "Created new deck: cards/deck_$create"
+    exit 0
+fi
+
+echo -e "\033[0;34m[#] Killing old docker processes\033[0m"
+docker-compose rm -fs
+
+echo -e "\033[0;34m[#] Running Deck Generator for cards/deck_$deck\033[0m"
+docker-compose build single-card
+docker-compose run -e DECK=$deck single-card
+docker-compose rm -fs
