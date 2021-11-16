@@ -31,6 +31,8 @@ Here is some brief info on creating your own cards:
 - `white.txt` controls the white cards to generate
 - `info.txt` controls meta data about the deck (e.g. the name of the deck, version, etc)
 
+> Usable double quotes: `“”`
+
 ### Custom Card attributes
 
 Here are a few quick custom card attributes that you can add to your cards:
